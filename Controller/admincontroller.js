@@ -2,19 +2,56 @@ const { getConnection } = require('../Config/dbconnection');
 
 async function createEmployee(req, res) {
   try {
-    const [result, fields] = await getConnection()
-      .query(`INSERT INTO employees (NAME,DEPARTMENT,DESIGNATION,PROJECT,EMPLOYEE_TYPE,EMPLOYEE_STATUS) 
- VALUES('${req.body.NAME}','${req.body.DEPARTMENT}','${req.body.DESIGNATION}','${req.body.PROJECT}','${req.body.EMPLOYEE_TYPE}','${req.body.EMPLOYEE_STATUS}');`);
+    const { ID, NAME, DEPARTMENT, DESIGNATION, PROJECT, EMPLOYEE_TYPE, EMPLOYEE_STATUS } =
+      req.body;
+
+    if (
+      !ID ||
+      !NAME ||
+      !DEPARTMENT ||
+      !DESIGNATION ||
+      !EMPLOYEE_TYPE ||
+      !EMPLOYEE_STATUS
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please give a rquired field',
+      });
+    }
+
+    const sql = `INSERT INTO employees (ID,NAME,DEPARTMENT,DESIGNATION,PROJECT,EMPLOYEE_TYPE,EMPLOYEE_STATUS)
+      VALUES(?,?,?,?,?,?,?)`;
+    const values = [
+      ID,
+      NAME,
+      DEPARTMENT,
+      DESIGNATION,
+      PROJECT,
+      EMPLOYEE_TYPE,
+      EMPLOYEE_STATUS || null,
+    ];
+
+    // console.log(sql);
+    // console.log(values);
+    const [result, fields] = await getConnection().query(sql, values);
 
     // console.log(result);
+
     if (result) {
       return res.status(200).json({
         sucess: true,
         message: 'employee created successfully',
-        employeeId: result.insertId,
+        employeeId: ID,
       });
     }
   } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(404).json({
+        success: false,
+        message: 'employee Id already creadted',
+      });
+    }
+
     console.log(error);
     return res.status(500).json({
       sucess: false,
@@ -123,7 +160,7 @@ async function editEmployee(req, res) {
   try {
     const employeeId = req.params.id;
 
-    const { NAME, DEPARTMENT, DESIGNATION, PROJECT, EMPLOYEE_TYPE, EMPLOYEE_STATUS } =
+    const { ID, NAME, DEPARTMENT, DESIGNATION, PROJECT, EMPLOYEE_TYPE, EMPLOYEE_STATUS } =
       req.body;
 
     if (!employeeId || isNaN(employeeId)) {
@@ -132,7 +169,9 @@ async function editEmployee(req, res) {
         message: 'Invalid or missing employee ID',
       });
     }
-    if ((!NAME, !DEPARTMENT, !DESIGNATION, !PROJECT, !EMPLOYEE_STATUS, !EMPLOYEE_TYPE)) {
+    if (
+      (!ID, !NAME, !DEPARTMENT, !DESIGNATION, !PROJECT, !EMPLOYEE_STATUS, !EMPLOYEE_TYPE)
+    ) {
       return res.status(404).json({
         success: false,
         message: 'Please provided atlease one field to update',
@@ -141,6 +180,11 @@ async function editEmployee(req, res) {
 
     let values = [];
     let setClauses = [];
+
+    if (ID) {
+      setClauses.push('ID = ?');
+      values.push(ID);
+    }
 
     if (NAME) {
       setClauses.push('NAME = ?');
