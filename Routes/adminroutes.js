@@ -3,7 +3,8 @@ const {
   getAllEmployee,
   getEmployeeId,
   searchEmployee,
-  editEmployee
+  editEmployee,
+  deleteEmployee
 } = require('../Controller/admincontroller');
 const express = require('express');
 
@@ -18,5 +19,7 @@ adminRoutes.get(`/empoly/:id`, getEmployeeId);
 adminRoutes.get('/search' , searchEmployee)
 
 adminRoutes.put('/update/:id' , editEmployee)
+
+adminRoutes.delete('/delete/:id' , deleteEmployee)
 
 module.exports = adminRoutes;

@@ -195,10 +195,47 @@ async function editEmployee(req, res) {
     });
   }
 }
+
+async function deleteEmployee(req, res) {
+  try {
+    const employeeId = req.params.id;
+
+    if (!employeeId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invaild employee id',
+      });
+    }
+
+    const [result] = await getConnection().query(
+      `DELETE  FROM employees WHERE  ID = ? `,
+      [employeeId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'employee  not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'successfully deleted',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'something wrong  cannot deleted',
+    });
+  }
+}
+
 module.exports = {
   createEmployee,
   getAllEmployee,
   getEmployeeId,
   searchEmployee,
   editEmployee,
+  deleteEmployee,
 };

@@ -2,12 +2,14 @@ const express = require('express');
 const path = require('path');
 const { createDBconnection } = require('./Config/dbconnection');
 const adminRoutes = require('./Routes/adminroutes');
+var cors = require('cors');
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 //create db connection
 createDBconnection();
