@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-const allowedOrigins = process.env.PORT;
+const allowedOrigins = process.env.Front_end_URL || 3000;
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // Postman or server-to-server
@@ -37,7 +37,18 @@ createDBconnection();
 app.use('/employee', adminRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Hello world');
+  try {
+    res.json({
+      success: true,
+      message: 'Job portal API is running',
+      time: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: 'Job API error',
+    });
+  }
 });
 
 app.listen(port, error => {

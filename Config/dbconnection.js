@@ -6,13 +6,8 @@ dotenv.config();
 let connect = null;
 
 async function createDBconnection() {
-  console.log('DB Config:', {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD ? '****' : 'EMPTY',
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-  });
+
+ 
   try {
     connect = await mysql.createConnection({
       host: process.env.DB_HOST,
