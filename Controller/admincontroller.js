@@ -2,9 +2,10 @@ const { getConnection } = require('../Config/dbconnection');
 
 async function createEmployee(req, res) {
   try {
+    console.log('Request body:', req.body);
+
     const { ID, NAME, DEPARTMENT, DESIGNATION, PROJECT, EMPLOYEE_TYPE, EMPLOYEE_STATUS } =
       req.body;
-
     if (
       !ID ||
       !NAME ||
@@ -96,7 +97,7 @@ async function getEmployeeId(req, res) {
       return res.status(404).json({
         success: false,
         message: 'employee not found',
-        data: [],
+        data: result,
       });
     }
 
